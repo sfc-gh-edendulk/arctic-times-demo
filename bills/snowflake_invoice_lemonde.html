@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snowflake - Invoice</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1b2735; font-size: 13px; line-height: 1.5; }
+  .page { max-width: 850px; margin: 0 auto; padding: 40px 50px; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #29B5E8; }
+  .sf-logo { display: flex; align-items: center; gap: 12px; }
+  .sf-logo svg { height: 36px; }
+  .sf-logo .sf-text { font-size: 20px; font-weight: 600; color: #1b2735; letter-spacing: -0.3px; }
+  .invoice-title { text-align: right; }
+  .invoice-title h1 { font-size: 24px; font-weight: 600; color: #1b2735; }
+  .invoice-title .invoice-number { color: #6e7a8a; font-size: 13px; margin-top: 4px; }
+  .meta-section { display: flex; justify-content: space-between; margin-bottom: 30px; }
+  .meta-block h3 { font-size: 11px; text-transform: uppercase; color: #6e7a8a; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+  .meta-block p { font-size: 13px; color: #1b2735; margin-bottom: 2px; }
+  .summary-bar { background: linear-gradient(135deg, #f0faff 0%, #e8f7fc 100%); border: 1px solid #b8e8f7; border-radius: 8px; padding: 18px 24px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+  .summary-bar .label { font-size: 13px; color: #4a5568; }
+  .summary-bar .amount { font-size: 28px; font-weight: 600; color: #11567a; }
+  .summary-bar .period { font-size: 12px; color: #6e7a8a; }
+  .account-info { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 18px; margin-bottom: 24px; display: flex; gap: 40px; font-size: 12px; }
+  .account-info .ai-label { color: #6e7a8a; font-weight: 500; }
+  .account-info .ai-value { color: #1b2735; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; color: #6e7a8a; letter-spacing: 0.5px; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; font-weight: 600; }
+  th:nth-child(2), th:nth-child(3), th:last-child { text-align: right; }
+  td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: top; }
+  td:nth-child(2), td:nth-child(3), td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.section-header td { background: #f8fafc; font-weight: 600; color: #1b2735; padding: 8px 12px; font-size: 12px; border-bottom: 1px solid #e2e8f0; }
+  tr.subtotal td { border-top: 1px solid #cbd5e1; font-weight: 500; background: #fafbfc; }
+  tr.total td { border-top: 2px solid #1b2735; font-weight: 700; font-size: 14px; padding: 12px; }
+  .wh-tag { display: inline-block; background: #e0f2fe; color: #0369a1; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px; font-weight: 500; }
+  .edition-tag { display: inline-block; background: #f0fdf4; color: #166534; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+  .credit-rate { color: #6e7a8a; font-size: 11px; }
+  .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #6e7a8a; font-size: 11px; }
+  .footer p { margin-bottom: 4px; }
+  .tax-note { font-size: 11px; color: #6e7a8a; margin-top: 8px; font-style: italic; }
+  .usage-summary { display: flex; gap: 24px; margin-bottom: 24px; }
+  .usage-card { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px 18px; text-align: center; }
+  .usage-card .uc-value { font-size: 22px; font-weight: 700; color: #11567a; }
+  .usage-card .uc-label { font-size: 11px; color: #6e7a8a; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+  @media print { .page { padding: 20px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="sf-logo">
+      <svg viewBox="0 0 60 56" xmlns="http://www.w3.org/2000/svg" height="36">
+        <path d="M42.5 0C37.8 0 33.7 2.5 31.3 6.2 29.2 3.5 25.8 1.8 22 1.8c-6.3 0-11.5 5.1-11.5 11.5 0 .8.1 1.6.2 2.4C4.6 17.4 0 23 0 29.7c0 7.8 6.3 14.2 14.2 14.2h3.3c1.5 3.4 4 6.3 7.2 8.3 2.1 1.3 4.5 2 7 2.2h.8c5.5 0 10.4-2.8 13.3-7.1.7.1 1.4.1 2.1.1 8.5 0 12.1-5 12.1-11.2 0-4.4-1.6-7.7-4.2-10.1 1.3-2.1 2.1-4.5 2.1-7.1C57.9 9 50.9 0 42.5 0z" fill="#29B5E8"/>
+      </svg>
+      <span class="sf-text">Snowflake</span>
+    </div>
+    <div class="invoice-title">
+      <h1>Invoice</h1>
+      <div class="invoice-number">Invoice #: SNF-EU-2026-06-091847<br>Contract: ENT-FR-2026-LM-0042</div>
+    </div>
+  </div>
+
+  <div class="meta-section">
+    <div class="meta-block">
+      <h3>Bill To</h3>
+      <p><strong>Le Monde Libre SAS</strong></p>
+      <p>67 bis, rue du Faubourg-Saint-Martin</p>
+      <p>75010 Paris, France</p>
+      <p>EU VAT: FR 82 433 891 850</p>
+    </div>
+    <div class="meta-block">
+      <h3>Account Details</h3>
+      <p>Organization: LEMONDE</p>
+      <p>Account: LEMONDE_PROD_EU</p>
+      <p>Region: AWS EU-West-3 (Paris)</p>
+      <p>Edition: <span class="edition-tag">Enterprise</span></p>
+    </div>
+    <div class="meta-block">
+      <h3>Billing Period</h3>
+      <p><strong>June 1 – 30, 2026</strong></p>
+      <p>Issue date: July 2, 2026</p>
+      <p>Due date: July 17, 2026</p>
+      <p>Terms: Net 15</p>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <div>
+      <div class="label">Total Amount Due</div>
+      <div class="period">Billing period: June 2026</div>
+    </div>
+    <div class="amount">$ 14,399.04</div>
+  </div>
+
+  <div class="account-info">
+    <div><span class="ai-label">Contract Type:</span> <span class="ai-value">Capacity (Annual Pre-Purchase)</span></div>
+    <div><span class="ai-label">Credit Rate:</span> <span class="ai-value">$3.60 / credit</span></div>
+    <div><span class="ai-label">Credits Used:</span> <span class="ai-value">3,236 of 48,000 annual</span></div>
+    <div><span class="ai-label">Balance Remaining:</span> <span class="ai-value">31,164 credits</span></div>
+  </div>
+
+  <div class="usage-summary">
+    <div class="usage-card">
+      <div class="uc-value">3,236</div>
+      <div class="uc-label">Credits consumed</div>
+    </div>
+    <div class="usage-card">
+      <div class="uc-value">14.8 TB</div>
+      <div class="uc-label">Storage (compressed)</div>
+    </div>
+    <div class="usage-card">
+      <div class="uc-value">99.7%</div>
+      <div class="uc-label">Uptime SLA</div>
+    </div>
+    <div class="usage-card">
+      <div class="uc-value">47</div>
+      <div class="uc-label">Active users</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Credits</th>
+        <th>Rate ($)</th>
+        <th>Amount ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Compute</strong><br><span style="color:#6e7a8a; font-size:11px;">Virtual Warehouse usage (LEMONDE_ANALYTICS_WH, LEMONDE_TRANSFORM_WH, LEMONDE_INGEST_WH, LEMONDE_DS_WH)</span></td>
+        <td>2,819</td>
+        <td>3.60</td>
+        <td>10,148.40</td>
+      </tr>
+      <tr>
+        <td><strong>Storage</strong><br><span style="color:#6e7a8a; font-size:11px;">On-demand storage — 14.8 TB average compressed (incl. Time Travel + Fail-safe)</span></td>
+        <td>—</td>
+        <td>$23/TB</td>
+        <td>349.60</td>
+      </tr>
+      <tr>
+        <td><strong>Cloud Services</strong><br><span style="color:#6e7a8a; font-size:11px;">Authentication, metadata operations, query compilation, result caching (net of 10% adjustment)</span></td>
+        <td>84</td>
+        <td>3.60</td>
+        <td>302.40</td>
+      </tr>
+      <tr>
+        <td><strong>Serverless</strong><br><span style="color:#6e7a8a; font-size:11px;">Snowpipe, Snowpipe Streaming, Tasks, Openflow CDC, Dynamic Table refresh</span></td>
+        <td>280</td>
+        <td>3.60</td>
+        <td>1,008.00</td>
+      </tr>
+      <tr>
+        <td><strong>AI Services</strong><br><span style="color:#6e7a8a; font-size:11px;">Cortex AI Functions (CLASSIFY, EXTRACT, COMPLETE), Cortex Search Service</span></td>
+        <td>53</td>
+        <td>3.60</td>
+        <td>190.80</td>
+      </tr>
+
+      <!-- Totals -->
+      <tr><td colspan="4" style="padding: 6px;"></td></tr>
+      <tr class="subtotal">
+        <td><strong>Subtotal (excl. VAT)</strong></td>
+        <td><strong>3,236</strong></td>
+        <td></td>
+        <td><strong>11,999.20</strong></td>
+      </tr>
+      <tr>
+        <td colspan="3">VAT (20% — reverse charge)</td>
+        <td>2,399.84</td>
+      </tr>
+      <tr class="total">
+        <td colspan="3">TOTAL DUE</td>
+        <td>$ 14,399.04</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="tax-note">* Snowflake Inc. invoices from Snowflake Computing Netherlands B.V. for EU customers. VAT reverse charge mechanism may apply under Article 196 of the EU VAT Directive for B2B transactions.</p>
+
+  <div class="footer">
+    <p><strong>Snowflake Computing Netherlands B.V.</strong> — Kingsfordweg 151, 1043 GR Amsterdam, Netherlands</p>
+    <p>VAT Registration: NL 863 724 980 B01 | Chamber of Commerce: 82547891</p>
+    <p>Payment terms: Net 15 days. Capacity credits are drawn down from your annual pre-purchase balance.</p>
+    <p style="margin-top: 12px; padding: 8px 12px; background: #f0faff; border-radius: 4px; border: 1px solid #b8e8f7; color: #0c4a6e;">
+      <strong>Note:</strong> This invoice reflects credit consumption against your annual capacity commitment (48,000 credits / 12 months). 
+      Unused credits roll over per contract terms. At current consumption rate (~3,236 credits/month), you are tracking within your committed capacity.
+    </p>
+    <p style="margin-top: 10px; color: #94a3b8;">This document was generated for estimation purposes. Actual invoices may differ based on negotiated contract terms, volume discounts, and usage patterns.</p>
+  </div>
+
+</div>
+</body>
+</html>

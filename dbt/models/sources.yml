@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    database: ARCTIC_TIMES
+    schema: RAW
+    tables:
+      - name: GA4_EVENTS
+        description: "Google Analytics 4 events (page views, clicks, scrolls, paywall hits)"
+      - name: SUBSCRIBERS
+        description: "Subscriber base with PII (masked for non-admin roles)"
+      - name: ARTICLES
+        description: "Articles from editorial CMS (via Openflow CDC from Postgres)"
+      - name: AUTHORS
+        description: "Journalists and contributors (via Openflow CDC)"

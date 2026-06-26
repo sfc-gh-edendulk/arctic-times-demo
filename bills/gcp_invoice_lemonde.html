@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Cloud Platform - Invoice</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Google Sans', 'Roboto', -apple-system, sans-serif; background: #fff; color: #202124; font-size: 14px; line-height: 1.6; }
+  .page { max-width: 780px; margin: 0 auto; padding: 50px 60px; min-height: 1050px; position: relative; }
+  .page-number { position: absolute; bottom: 40px; right: 60px; font-size: 12px; color: #5f6368; }
+
+  /* Header */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
+  .header-left { display: flex; flex-direction: column; gap: 4px; }
+  .header-left .google-logo { margin-bottom: 6px; }
+  .header-left .invoice-label { font-size: 32px; font-weight: 400; color: #202124; margin-bottom: 4px; }
+  .header-left .invoice-num { font-size: 13px; color: #5f6368; }
+  .header-right { text-align: right; font-size: 13px; color: #202124; line-height: 1.7; }
+  .header-right strong { font-weight: 600; }
+
+  /* Bill To */
+  .bill-to { margin-bottom: 40px; }
+  .bill-to h3 { font-size: 13px; font-weight: 600; color: #202124; margin-bottom: 6px; }
+  .bill-to p { font-size: 13px; color: #202124; margin-bottom: 1px; }
+
+  /* Details + Summary side by side */
+  .details-summary { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+  .details { }
+  .details h3 { font-size: 13px; font-weight: 600; color: #202124; margin-bottom: 10px; }
+  .details table { border-collapse: collapse; }
+  .details td { padding: 2px 0; font-size: 13px; color: #202124; }
+  .details td:first-child { padding-right: 16px; color: #202124; }
+  .details .dots { color: #dadce0; letter-spacing: 2px; padding: 0 8px; }
+
+  .summary { text-align: right; }
+  .summary h3 { font-size: 13px; font-weight: 600; color: #202124; margin-bottom: 4px; }
+  .summary .total-label { font-size: 14px; color: #202124; margin-bottom: 4px; }
+  .summary .total-amount { font-size: 36px; font-weight: 400; color: #202124; margin-bottom: 16px; }
+  .summary-period { font-size: 13px; font-weight: 600; color: #202124; margin-bottom: 10px; }
+  .summary-table { margin-left: auto; }
+  .summary-table td { padding: 3px 0; font-size: 13px; }
+  .summary-table td:first-child { padding-right: 30px; color: #202124; }
+  .summary-table td:last-child { text-align: right; }
+  .summary-table tr:last-child td { font-weight: 600; }
+
+  /* Footer text */
+  .vat-note { font-size: 12px; color: #5f6368; margin-bottom: 10px; }
+  .legal-text { font-size: 12px; color: #5f6368; margin-bottom: 8px; line-height: 1.5; }
+  .auto-charge { font-size: 12px; color: #5f6368; margin-top: 16px; }
+
+  /* Page 2 */
+  .page-break { page-break-before: always; }
+  .p2-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+  .p2-header .google-invoice { display: flex; align-items: center; gap: 12px; }
+  .p2-header .google-invoice .label { font-size: 22px; font-weight: 400; color: #202124; }
+  .p2-header .inv-ref { font-size: 12px; color: #5f6368; }
+  .p2-note { font-size: 12px; color: #5f6368; margin-bottom: 6px; }
+  .p2-link { font-size: 12px; color: #1a73e8; text-decoration: underline; margin-bottom: 40px; display: block; }
+  .line-items { width: 100%; margin-bottom: 30px; }
+  .line-items thead th { text-align: left; font-size: 13px; font-weight: 600; color: #202124; padding: 10px 0; border-bottom: 2px solid #202124; }
+  .line-items thead th:last-child { text-align: right; }
+  .line-items tbody td { padding: 12px 0; font-size: 13px; color: #202124; border-bottom: 1px solid #dadce0; }
+  .line-items tbody td:last-child { text-align: right; }
+  .p2-totals { margin-left: auto; width: 280px; }
+  .p2-totals td { padding: 4px 0; font-size: 13px; }
+  .p2-totals td:last-child { text-align: right; }
+  .p2-totals tr.total-line td { border-top: 2px solid #1a73e8; padding-top: 10px; }
+  .p2-totals .final-total { font-size: 22px; font-weight: 600; color: #202124; }
+
+  @media print {
+    .page { padding: 30px 40px; min-height: auto; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="page">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="google-logo">
+        <svg viewBox="0 0 272 92" height="36" xmlns="http://www.w3.org/2000/svg">
+          <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+          <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+          <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+          <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+          <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/>
+          <path d="M35.29 41.19V32H67c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.91.36 15.93 16.32.47 35.3.47c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.49-.01z" fill="#4285F4"/>
+        </svg>
+      </div>
+      <div class="invoice-label">Invoice</div>
+      <div class="invoice-num">Invoice number: GCFRD0026410871</div>
+    </div>
+    <div class="header-right">
+      <strong>Google Cloud France SARL</strong><br>
+      8 Rue de Londres<br>
+      75009 Paris<br>
+      France<br>
+      VAT number: FR78881721583<br>
+      SIREN: 881721583<br>
+      RCS: 881721583
+    </div>
+  </div>
+
+  <div class="bill-to">
+    <h3>Bill to</h3>
+    <p>Le Monde Libre SAS</p>
+    <p>67 bis, rue du Faubourg-Saint-Martin</p>
+    <p>75010 Paris</p>
+    <p>France</p>
+  </div>
+
+  <div class="details-summary">
+    <div class="details">
+      <h3>Details</h3>
+      <table>
+        <tr><td>Invoice number</td><td><span class="dots">........................</span></td><td>GCFRD0026410871</td></tr>
+        <tr><td>Invoice date</td><td><span class="dots">.........................</span></td><td>June 30, 2026</td></tr>
+        <tr><td>Billing ID</td><td><span class="dots">............................</span></td><td>4821-7293-6150</td></tr>
+        <tr><td>Account ID</td><td><span class="dots">..........................</span></td><td>02ABCD-45EFGH-78IJKL</td></tr>
+      </table>
+    </div>
+    <div class="summary">
+      <h3>Google Cloud</h3>
+      <div class="total-label">Total in EUR</div>
+      <div class="total-amount">€14,196.48</div>
+      <div class="summary-period">Summary for June 1, 2026 - June 30, 2026</div>
+      <table class="summary-table">
+        <tr><td>Subtotal in EUR</td><td>€11,830.40</td></tr>
+        <tr><td>VAT (20%)</td><td>€2,366.08</td></tr>
+        <tr><td>Total in EUR</td><td>€14,196.48</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <p class="vat-note">VAT on debits.</p>
+  <p class="legal-text">Google Cloud electronic services are provided according to your agreement. Full details on this usage are available via the digitized link on the second page of this invoice (which is downloadable on the Cloud console).</p>
+  <p class="auto-charge">You will be automatically charged for any amount due.</p>
+
+  <div class="page-number">Page 1 of 3</div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page page-break">
+
+  <div class="p2-header">
+    <div class="google-invoice">
+      <svg viewBox="0 0 272 92" height="28" xmlns="http://www.w3.org/2000/svg">
+        <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+        <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+        <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+        <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+        <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/>
+        <path d="M35.29 41.19V32H67c.31 1.64.47 3.58.47 5.68 0 7.06-1.93 15.79-8.15 22.01-6.05 6.3-13.78 9.66-24.02 9.66C16.32 69.35.36 53.89.36 34.91.36 15.93 16.32.47 35.3.47c10.5 0 17.98 4.12 23.6 9.49l-6.64 6.64c-4.03-3.78-9.49-6.72-16.97-6.72-13.86 0-24.7 11.17-24.7 25.03 0 13.86 10.84 25.03 24.7 25.03 8.99 0 14.11-3.61 17.39-6.89 2.66-2.66 4.41-6.46 5.1-11.65l-22.49-.01z" fill="#4285F4"/>
+      </svg>
+      <span class="label">Invoice</span>
+    </div>
+    <div class="inv-ref">Invoice number: GCFRD0026410871</div>
+  </div>
+
+  <p class="p2-note">Use the Google Cloud Platform cost table to view and download detailed usage data such as per-project costs:</p>
+  <a class="p2-link" href="#">console.cloud.google.com/billing/02ABCD-45EFGH-78IJKL/reports/tabular</a>
+
+  <table class="line-items">
+    <thead>
+      <tr><th>Description</th><th>Amount(€)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Google Cloud - Fee for June 2026</td><td>11,830.40</td></tr>
+    </tbody>
+  </table>
+
+  <table class="p2-totals">
+    <tr><td>Subtotal in EUR</td><td>€11,830.40</td></tr>
+    <tr><td>VAT (20%)</td><td>€2,366.08</td></tr>
+    <tr class="total-line"><td>Total in EUR</td><td class="final-total">€14,196.48</td></tr>
+  </table>
+
+  <div class="page-number">Page 2 of 3</div>
+</div>
+
+<!-- PAGE 3: Cost Table (Cloud Console style) -->
+<div class="page page-break" style="min-height: auto; padding-bottom: 40px;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+    <h2 style="font-size: 18px; font-weight: 400; color: #202124;">My Billing Account, 01/06/2026 – 30/06/2026</h2>
+    <span style="font-size: 12px; color: #5f6368;">⬇ Download CSV</span>
+  </div>
+
+  <style>
+    .cost-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .cost-table th { text-align: left; padding: 8px 10px; border-bottom: 1px solid #dadce0; color: #5f6368; font-weight: 500; font-size: 11px; }
+    .cost-table th:last-child { text-align: right; }
+    .cost-table td { padding: 7px 10px; border-bottom: 1px solid #f1f3f4; color: #202124; vertical-align: top; }
+    .cost-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+    .cost-table .project-row td { background: #fff; font-weight: 500; }
+    .cost-table .service-row td { padding-left: 28px; }
+    .cost-table .sku-row td { padding-left: 50px; color: #5f6368; }
+    .cost-table .arrow { color: #5f6368; font-size: 10px; margin-right: 6px; }
+    .cost-table .billing-acct { color: #5f6368; font-size: 11px; }
+    .cost-table .project-id { color: #5f6368; font-size: 11px; }
+  </style>
+
+  <table class="cost-table">
+    <thead>
+      <tr>
+        <th>Project › Service › SKU › Consumption model</th>
+        <th>Billing account name</th>
+        <th>Billing account ID</th>
+        <th>Project name</th>
+        <th>Project ID</th>
+        <th>↓ Cost (€)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Project: LEMONDE-DATA-PROD -->
+      <tr class="project-row">
+        <td><span class="arrow">▼</span> LEMONDE-DATA-PROD</td>
+        <td class="billing-acct">Le Monde Data</td>
+        <td class="billing-acct">02ABCD-45EFGH-78IJKL</td>
+        <td>LEMONDE-DATA-PROD</td>
+        <td class="project-id">lemonde-data-prod-8291</td>
+        <td>9,204.42</td>
+      </tr>
+
+      <!-- BigQuery -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> BigQuery</td>
+        <td></td><td></td><td></td><td></td>
+        <td>3,386.74</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Analysis (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>552.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Enterprise Edition Slots (100 slots, annual)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>1,877.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Active Logical Storage (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>221.18</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Long Term Logical Storage (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>322.56</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Streaming Inserts</td>
+        <td></td><td></td><td></td><td></td>
+        <td>414.00</td>
+      </tr>
+
+      <!-- Cloud Composer -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Cloud Composer</td>
+        <td></td><td></td><td></td><td></td>
+        <td>1,105.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Composer 2 Environment (Medium, europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>843.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Worker vCPU and Memory (3 workers, autoscale)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>262.00</td>
+      </tr>
+
+      <!-- Dataflow -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Dataflow</td>
+        <td></td><td></td><td></td><td></td>
+        <td>920.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Streaming vCPU Time (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>645.12</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Streaming Memory (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>69.12</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Batch Compute (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>205.76</td>
+      </tr>
+
+      <!-- Datastream -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Datastream</td>
+        <td></td><td></td><td></td><td></td>
+        <td>138.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ CDC Replication - PostgreSQL (1,380 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>138.00</td>
+      </tr>
+
+      <!-- Cloud SQL -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Cloud SQL</td>
+        <td></td><td></td><td></td><td></td>
+        <td>828.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ PostgreSQL db-custom-4-16384 HA (europe-west9)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>691.20</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ SSD Storage (HA replicated, 500 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>136.80</td>
+      </tr>
+
+      <!-- Networking -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Networking</td>
+        <td></td><td></td><td></td><td></td>
+        <td>276.48</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Inter-region Egress (3,072 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>276.48</td>
+      </tr>
+
+      <!-- Cloud Storage -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Cloud Storage</td>
+        <td></td><td></td><td></td><td></td>
+        <td>285.70</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Standard Storage Multi-region (8,192 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>147.46</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Nearline Storage Multi-region (15,360 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>138.24</td>
+      </tr>
+
+      <!-- Pub/Sub -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Pub/Sub</td>
+        <td></td><td></td><td></td><td></td>
+        <td>60.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Message Delivery (1,536 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>60.00</td>
+      </tr>
+
+      <!-- Cloud Monitoring -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Cloud Monitoring</td>
+        <td></td><td></td><td></td><td></td>
+        <td>345.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Log Ingestion (280 GB)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>140.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Custom Metrics + Alerting Policies</td>
+        <td></td><td></td><td></td><td></td>
+        <td>205.00</td>
+      </tr>
+
+      <!-- Compute Engine (Composer underlying) -->
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Compute Engine</td>
+        <td></td><td></td><td></td><td></td>
+        <td>514.50</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ E2 Instance Core running in EMEA (Composer workers)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>312.40</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ E2 Instance RAM running in EMEA</td>
+        <td></td><td></td><td></td><td></td>
+        <td>202.10</td>
+      </tr>
+
+      <!-- Looker project -->
+      <tr class="project-row">
+        <td><span class="arrow">▼</span> LEMONDE-ANALYTICS</td>
+        <td class="billing-acct">Le Monde Data</td>
+        <td class="billing-acct">02ABCD-45EFGH-78IJKL</td>
+        <td>LEMONDE-ANALYTICS</td>
+        <td class="project-id">lemonde-analytics-4107</td>
+        <td>4,140.00</td>
+      </tr>
+      <tr class="service-row">
+        <td><span class="arrow">▶</span> Looker</td>
+        <td></td><td></td><td></td><td></td>
+        <td>4,140.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Platform License — Enterprise</td>
+        <td></td><td></td><td></td><td></td>
+        <td>2,760.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Developer User Licenses (8 seats)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>920.00</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Viewer User Licenses (32 seats)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>460.00</td>
+      </tr>
+
+      <!-- Support -->
+      <tr class="project-row">
+        <td><span class="arrow">▶</span> Support</td>
+        <td class="billing-acct">Le Monde Data</td>
+        <td class="billing-acct">02ABCD-45EFGH-78IJKL</td>
+        <td></td>
+        <td></td>
+        <td>345.48</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Enhanced Support (3% of eligible spend)</td>
+        <td></td><td></td><td></td><td></td>
+        <td>345.48</td>
+      </tr>
+
+      <!-- Spending-based discounts -->
+      <tr class="project-row">
+        <td><span class="arrow">▶</span> Promotions & Discounts</td>
+        <td class="billing-acct">Le Monde Data</td>
+        <td class="billing-acct">02ABCD-45EFGH-78IJKL</td>
+        <td></td>
+        <td></td>
+        <td style="color: #137333;">-1,859.50</td>
+      </tr>
+      <tr class="sku-row">
+        <td>▶ Spending-based discount (CUD, sustained use)</td>
+        <td></td><td></td><td></td><td></td>
+        <td style="color: #137333;">-1,859.50</td>
+      </tr>
+
+      <!-- Tax -->
+      <tr class="project-row">
+        <td><span class="arrow">▶</span> Tax</td>
+        <td class="billing-acct">Le Monde Data</td>
+        <td class="billing-acct">02ABCD-45EFGH-78IJKL</td>
+        <td></td>
+        <td></td>
+        <td>2,366.08</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div style="margin-top: 20px; padding: 10px 0; border-top: 2px solid #202124; display: flex; justify-content: flex-end;">
+    <table style="font-size: 13px;">
+      <tr><td style="padding-right: 30px; font-weight: 600;">Total</td><td style="font-weight: 600; font-variant-numeric: tabular-nums;">€14,196.48</td></tr>
+    </table>
+  </div>
+
+  <div class="page-number">Page 3 of 3</div>
+</div>
+
+</body>
+</html>
