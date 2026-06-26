@@ -1,0 +1,10 @@
+arctic_times:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      account: SFSENORTHAMERICA-LIZZY_USWEST
+      database: ARCTIC_TIMES
+      schema: MARTS
+      warehouse: SS_DEV_WH
+      role: ACCOUNTADMIN
