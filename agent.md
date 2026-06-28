@@ -11,6 +11,7 @@ Full-stack Snowflake data platform demo targeting prospects migrating from GCP/B
 | `terraform/*.tf` | IaC for all Snowflake + AWS objects |
 | `dbt/` | dbt project with staging + mart models |
 | `scripts/data_generation/generate_all.py` | Synthetic data generator (GA4 events, subscribers) |
+| `scripts/setup_cortex_agent.sql` | Semantic View + Cortex Agent creation |
 | `notebooks/churn_model_training.ipynb` | ML model training + UDTF deployment |
 | `docs/demo_script.sql` | Full demo run-through (2 sessions, 20 min total) |
 | `bills/` | Mock invoice comparison HTML files |
@@ -58,7 +59,6 @@ Full-stack Snowflake data platform demo targeting prospects migrating from GCP/B
 
 - `terraform/postgres.tf` is commented out (TF resource not GA yet) — provision PG via SQL
 - Openflow connector must be deployed manually via UI/API
-- Cortex Agent creation requires semantic view to be defined first
 
 ## Connection info
 

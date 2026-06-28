@@ -220,13 +220,25 @@ Open `notebooks/churn_model_training.ipynb` in Snowflake Notebooks and run all c
 
 ### 10. Create Cortex Agent
 
+Run the setup script:
 ```sql
-CREATE OR REPLACE SEMANTIC VIEW ARCTIC_TIMES.AI.CONTENT_SV ...;
--- (See full definition in demo_script.sql)
+-- Execute scripts/setup_cortex_agent.sql in Snowsight
+-- This creates:
+--   1. ARCTIC_TIMES.AI.CONTENT_SV (semantic view over articles + engagement)
+--   2. ARCTIC_TIMES.AI.EDITORIAL_ASSISTANT (French-speaking Cortex Agent)
+```
 
-CREATE OR REPLACE CORTEX AGENT ARCTIC_TIMES.AI.EDITORIAL_ASSISTANT
-  TOOLS = (snowflake_data_tool(semantic_view => 'ARCTIC_TIMES.AI.CONTENT_SV'))
-  COMMENT = 'Editorial assistant — article performance and reader trends';
+Or use the Snowflake CLI:
+```bash
+snow sql -f scripts/setup_cortex_agent.sql
+```
+
+Verify:
+```sql
+SELECT SNOWFLAKE.CORTEX.AGENT(
+  'ARCTIC_TIMES.AI.EDITORIAL_ASSISTANT',
+  'Quels articles ont le meilleur engagement?'
+);
 ```
 
 ## Post-deployment verification

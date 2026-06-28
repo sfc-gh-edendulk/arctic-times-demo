@@ -174,13 +174,26 @@ LIMIT 10;
 -- === SECTION 8 (9-11 min) — CORTEX AGENT ===
 -- [COMPARE TO BIGQUERY] Nothing equivalent. Would need Vertex AI + custom code.
 -- Here: editorial staff ask questions in French. No SQL. No dashboard training.
+-- [TERRAFORM] Semantic View + Agent definition (see scripts/setup_cortex_agent.sql)
 
--- Example queries the agent handles:
--- "Quels articles ont le meilleur engagement cette semaine?"
--- "Quelle section perd des lecteurs par rapport au mois dernier?"
--- "Montre-moi les articles premium avec un fort taux de rebond"
+-- Setup (already done during deployment):
+-- Semantic View: ARCTIC_TIMES.AI.CONTENT_SV (covers articles + engagement)
+-- Agent: ARCTIC_TIMES.AI.EDITORIAL_ASSISTANT (French, concise, factual)
 
--- (Demo in Snowflake Intelligence UI or via API call)
+-- Live demo: ask in French, get data-grounded answers
+SELECT SNOWFLAKE.CORTEX.AGENT(
+  'ARCTIC_TIMES.AI.EDITORIAL_ASSISTANT',
+  'Quels articles ont le meilleur engagement cette semaine?'
+);
+
+-- Follow-up: section comparison
+SELECT SNOWFLAKE.CORTEX.AGENT(
+  'ARCTIC_TIMES.AI.EDITORIAL_ASSISTANT',
+  'Compare International vs Politique en nombre de lecteurs uniques cette semaine'
+);
+
+-- "Your editorial team asks questions in French.
+-- No SQL training. No dashboard. Just questions and answers grounded in real data."
 
 
 -- === SECTION 9 (11-12 min) — BONUS: PYTHON UDTF CHURN MODEL ===
