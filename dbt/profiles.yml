@@ -3,8 +3,8 @@ arctic_times:
   outputs:
     prod:
       type: snowflake
-      account: SFSENORTHAMERICA-LIZZY_USWEST
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'YOUR_ORG-YOUR_ACCOUNT') }}"
       database: ARCTIC_TIMES
       schema: MARTS
-      warehouse: SS_DEV_WH
-      role: ACCOUNTADMIN
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ACCOUNTADMIN') }}"

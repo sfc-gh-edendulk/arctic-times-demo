@@ -3,7 +3,6 @@
 # ------------------------------------------------------------------------------
 #
 # This shows what the customer would provision on their side.
-# In this demo, s3://edendulksnow/ already exists with the IAM role configured.
 #
 
 # S3 bucket for Iceberg table data (open format)
@@ -38,12 +37,12 @@ resource "aws_iam_role" "snowflake_iceberg" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::339712967182:user/se9m0000-s"  # Snowflake's IAM user
+          AWS = var.snowflake_iam_user_arn  # From DESC STORAGE INTEGRATION
         }
         Action = "sts:AssumeRole"
         Condition = {
           StringEquals = {
-            "sts:ExternalId" = "FKB85976_SFCRole=2_kQe53Mk3nblPcTHfVneKKRf7S2Q="
+            "sts:ExternalId" = var.snowflake_external_id  # From DESC STORAGE INTEGRATION
           }
         }
       }

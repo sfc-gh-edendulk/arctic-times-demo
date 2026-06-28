@@ -14,9 +14,11 @@ terraform {
 }
 
 provider "snowflake" {
-  organization_name = "SFSENORTHAMERICA"
-  account_name      = "LIZZY_USWEST"
-  role              = "ACCOUNTADMIN"
+  # Configure via environment variables or CLI config:
+  # SNOWFLAKE_ORGANIZATION_NAME, SNOWFLAKE_ACCOUNT_NAME
+  # Or set directly here:
+  # organization_name = "YOUR_ORG"
+  # account_name      = "YOUR_ACCOUNT"
 }
 
 provider "aws" {

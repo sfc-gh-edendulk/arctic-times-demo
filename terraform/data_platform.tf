@@ -2,7 +2,7 @@
 # Iceberg Tables — Open Format on S3
 # ------------------------------------------------------------------------------
 #
-# Uses the pre-existing ICEBERG_EXTERNAL_VOLUME which points to s3://edendulksnow/
+# Uses the External Volume configured in your account (see DEPLOYMENT.md step 8).
 # In production, the customer would create their own external volume with their
 # IAM role and S3 bucket — shown in aws.tf
 #
@@ -60,10 +60,5 @@ resource "snowflake_table" "article_metrics_iceberg" {
 
 # CREATE DYNAMIC TABLE ARCTIC_TIMES.CURATED.READER_ENGAGEMENT
 #   TARGET_LAG = '5 minutes'
-#   WAREHOUSE = SS_DEV_WH
-#   AS SELECT ... FROM ARCTIC_TIMES.RAW.GA4_EVENTS GROUP BY ...;
-
-# CREATE DYNAMIC TABLE ARCTIC_TIMES.CURATED.ARTICLE_PERFORMANCE
-#   TARGET_LAG = '10 minutes'
-#   WAREHOUSE = SS_DEV_WH
+#   WAREHOUSE = var.snowflake_warehouse
 #   AS SELECT ... FROM ARCTIC_TIMES.RAW.ARTICLES a JOIN ARCTIC_TIMES.RAW.GA4_EVENTS e ...;

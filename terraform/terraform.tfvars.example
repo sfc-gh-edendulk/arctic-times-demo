@@ -1,0 +1,18 @@
+# Arctic Times Demo — Terraform Variables
+# Copy this file to terraform.tfvars and edit with your values.
+
+# Required: your warehouse name
+snowflake_warehouse = "COMPUTE_WH"
+
+# Required: S3 bucket for Iceberg table storage (must exist in your AWS account)
+iceberg_s3_bucket = "your-iceberg-bucket"
+
+# Optional: project naming prefix (default: arctic_times)
+# project_name = "arctic_times"
+
+# Optional: base path within S3 bucket (default: arctic_times)
+# iceberg_base_path = "arctic_times"
+
+# Required for IAM trust policy (get from DESC STORAGE INTEGRATION):
+snowflake_iam_user_arn = "arn:aws:iam::123456789012:user/abc123-s"
+snowflake_external_id  = "YOUR_EXTERNAL_ID_HERE"

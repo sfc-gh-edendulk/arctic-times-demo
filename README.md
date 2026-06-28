@@ -1,6 +1,8 @@
 # Arctic Times — Snowflake Demo Platform
 
-Full-stack data platform demo for a fictional French press group, showcasing AWS + Snowflake architecture.
+Full-stack data platform demo for a fictional French press group, showcasing AWS + Snowflake architecture as a replacement for a GCP/BigQuery stack.
+
+*Arctic Times is a fictional media company created for this demo.*
 
 ## What this demonstrates
 
@@ -49,32 +51,48 @@ Full-stack data platform demo for a fictional French press group, showcasing AWS
 ## Project structure
 
 ```
-├── terraform/          # IaC for all Snowflake + AWS objects
-├── dbt/                # dbt project (staging + marts models)
-├── scripts/            # Data generation, setup, and demo helpers
-├── notebooks/          # Snowflake notebooks (exploration, ML training)
-├── docs/               # Demo run-through script, talking points
+├── terraform/                  # IaC for all Snowflake + AWS objects
+├── dbt/                        # dbt project (staging + marts models)
+├── scripts/data_generation/    # Synthetic data generation
+├── notebooks/                  # Snowflake notebooks (ML model training)
+├── docs/                       # Demo run-through SQL script
+├── bills/                      # Mock invoice comparison (GCP vs Snowflake)
+├── DEPLOYMENT.md               # Full deployment guide
 └── README.md
 ```
 
-## Snowflake account
-
-- **Account:** SFSENORTHAMERICA-LIZZY_USWEST (AWS us-west-2)
-- **Database:** ARCTIC_TIMES
-- **Iceberg volume:** ICEBERG_EXTERNAL_VOLUME → s3://edendulksnow/
-
 ## Quick start
 
+See [DEPLOYMENT.md](DEPLOYMENT.md) for full step-by-step instructions.
+
 ```bash
-# 1. Apply Terraform
-cd terraform && terraform init && terraform plan
+# 1. Apply Terraform (creates database, schemas, roles, S3 infra)
+cd terraform && terraform init && terraform apply
 
 # 2. Generate synthetic data
-cd ../scripts && python data_generation/generate_all.py
+cd ../scripts/data_generation && pip install -r ../../requirements.txt && python generate_all.py
 
 # 3. Deploy dbt project
-cd ../dbt && snow dbt deploy
+cd ../../dbt && snow dbt deploy
 
 # 4. Run the demo
 # Open docs/demo_script.sql in Snowsight
 ```
+
+## Prerequisites
+
+- Snowflake account with Enterprise edition (for masking policies)
+- AWS account (for S3 + IAM, used by Iceberg and Snowpipe)
+- Snowflake features enabled: Postgres, Openflow, Cortex AI, Iceberg, dbt Projects
+- Python 3.11+ (for data generation and notebook)
+- Terraform 1.5+ with Snowflake provider
+
+## Estimated cost
+
+- **Snowflake credits:** ~50 credits for full demo setup and run-through
+- **AWS:** Minimal (S3 storage + SQS — under $1/month for demo data volumes)
+- **Warehouse:** XS or S sufficient for all operations
+
+## Credits
+
+Built for internal Snowflake demo purposes.

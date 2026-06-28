@@ -25,7 +25,21 @@ dbt/logs/
 .DS_Store
 Thumbs.db
 
+# Editor / IDE
+.vscode/
+.idea/
+.cursor/
+
 # Data files (generated, not committed)
 scripts/data_generation/output/
 *.parquet
 *.csv.gz
+
+# Development progress tracking
+session_progress.md
+*_progress.md
+*.plan.md
+TODO.md
+SCRATCH.md
+scratch/
+.snowflake/cortex/plans/

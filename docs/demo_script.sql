@@ -1,16 +1,16 @@
 -- ============================================================================
 -- ARCTIC TIMES — Demo Run-Through Script
 -- ============================================================================
--- Account: SFSENORTHAMERICA-LIZZY_USWEST (AWS us-west-2)
+-- Account: <YOUR_ORG-YOUR_ACCOUNT>
 -- Duration: Session 1 (8 min) + Session 2 (12 min)
 -- 
--- Each section addresses one of Theo's stated concerns.
+-- Each section addresses one of the prospect's stated concerns.
 -- [COMPARE TO BIGQUERY] annotations show the contrast.
 -- [TERRAFORM] annotations show IaC-ability.
 -- ============================================================================
 
 USE DATABASE ARCTIC_TIMES;
-USE WAREHOUSE SS_DEV_WH;
+USE WAREHOUSE IDENTIFIER($warehouse);  -- Set: SET warehouse = 'YOUR_WH';
 
 -- ============================================================================
 -- SESSION 1: Why Snowflake is different from BigQuery (8 min)
@@ -167,7 +167,7 @@ ORDER BY unique_readers DESC
 LIMIT 10;
 
 -- Show: same query, same performance. But the data is Parquet in S3.
--- Open AWS console → s3://edendulksnow/arctic_times/article_metrics/data/
+-- Open AWS console → s3://<YOUR_BUCKET>/arctic_times/article_metrics/data/
 -- These files are readable by Athena / Spark / Trino RIGHT NOW.
 
 

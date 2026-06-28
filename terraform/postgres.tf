@@ -12,7 +12,19 @@
 #   AUTHENTICATION_AUTHORITY = POSTGRES;
 #
 
-# Placeholder — use pg_connect.py for actual provisioning until TF resource GA
+# PROVISIONING NOTE:
+# The Terraform resource for Snowflake Postgres is in preview.
+# Until GA, provision the instance via SQL:
+#
+#   CREATE POSTGRES INSTANCE ARCTIC_TIMES_CMS
+#     COMPUTE_FAMILY = 'BURST_M'
+#     STORAGE_SIZE_GB = 10
+#     AUTHENTICATION_AUTHORITY = POSTGRES;
+#
+# Or use the Snowflake CLI: snow postgres create --name ARCTIC_TIMES_CMS ...
+#
+# Once the TF provider supports it, uncomment and apply:
+#
 # resource "snowflake_postgres_instance" "cms" {
 #   name                     = "ARCTIC_TIMES_CMS"
 #   compute_family           = "BURST_M"
