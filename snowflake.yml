@@ -1,0 +1,14 @@
+definition_version: 2
+entities:
+  churn_model_training:
+    type: notebook
+    identifier:
+      name: CHURN_MODEL_TRAINING
+      database: ARCTIC_TIMES
+      schema: ML
+    query_warehouse: COMPUTE_WH
+    compute_pool: ARCTIC_TIMES_NB_POOL
+    runtime_name: SYSTEM$BASIC_RUNTIME
+    notebook_file: notebooks/churn_model_training.ipynb
+    artifacts:
+      - notebooks/churn_model_training.ipynb
