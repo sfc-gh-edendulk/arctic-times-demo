@@ -1,8 +1,14 @@
 # Arctic Times Demo — Python dependencies
 # For: notebooks/churn_model_training.ipynb + scripts/data_generation/generate_all.py
+#
+# Versions pinned for compatibility with the Snowflake connector's Arrow->pandas
+# fetch path and to match scikit-learn 1.9.0 in Snowflake conda (UDTF unpickling).
 
 snowflake-snowpark-python>=1.20.0
-scikit-learn>=1.4.0
-pandas>=2.1.0
-numpy>=1.26.0
+snowflake-connector-python[pandas]>=3.12.0
+scikit-learn==1.9.0
+scipy>=1.11,<1.14
+pandas>=2.1,<2.3
+numpy>=1.26,<2.0
+pyarrow
 joblib>=1.3.0

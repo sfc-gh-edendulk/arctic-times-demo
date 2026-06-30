@@ -207,7 +207,30 @@ def generate_subscribers():
         first = random.choice(FIRST_NAMES)
         last = random.choice(LAST_NAMES)
         start_date = datetime.now() - timedelta(days=random.randint(30, 1800))
-        last_login = datetime.now() - timedelta(days=random.randint(0, 90))
+        days_since_login = random.randint(0, 90)
+        last_login = datetime.now() - timedelta(days=days_since_login)
+        articles_read_30d = random.randint(0, 120)
+        paywall_bounces_30d = random.randint(0, 30)
+
+        # Churn signal: more likely when inactive, low reading, high paywall bounces.
+        # Gives the ML model a learnable pattern (days_since_login is top driver).
+        churn_score = (
+            days_since_login / 90.0 * 0.6
+            + (1 - min(articles_read_30d, 60) / 60.0) * 0.25
+            + min(paywall_bounces_30d, 30) / 30.0 * 0.15
+        )
+        churn_flag = random.random() < churn_score
+
+        # Engagement segment derived from recent activity.
+        if articles_read_30d >= 60 and days_since_login <= 7:
+            segment = "loyal"
+        elif articles_read_30d >= 20:
+            segment = "regular"
+        elif days_since_login >= 45:
+            segment = "dormant"
+        else:
+            segment = "casual"
+
         subscribers.append({
             "user_id": f"USR_{i + 1:06d}",
             "full_name": f"{first} {last}",
@@ -216,10 +239,12 @@ def generate_subscribers():
             "subscription_type": random.choice(SUBSCRIPTION_TYPES),
             "start_date": start_date.strftime("%Y-%m-%d"),
             "last_login": last_login.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "articles_read_30d": random.randint(0, 120),
+            "articles_read_30d": articles_read_30d,
             "avg_session_sec": random.randint(30, 1200),
-            "paywall_bounces_30d": random.randint(0, 30),
+            "paywall_bounces_30d": paywall_bounces_30d,
             "ltv_estimated_eur": round(random.uniform(20, 2000), 2),
+            "segment": segment,
+            "churn_flag": churn_flag,
         })
 
     chunk_size = 20_000
