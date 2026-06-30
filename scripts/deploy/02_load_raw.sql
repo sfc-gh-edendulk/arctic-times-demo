@@ -4,7 +4,10 @@
 -- Loads GA4 tracking (batch_1, schema-evolution enabled), VARIANT events,
 -- and subscribers. batch_2 is uploaded but NOT loaded (reserved for the live
 -- schema-evolution demo).
---   snow sql -f scripts/deploy/02_load_raw.sql --connection lemondetrial
+--
+-- PUT paths are relative to the repo root, so RUN THIS FROM THE REPO ROOT:
+--   cd <repo-root>
+--   snow sql -f scripts/deploy/02_load_raw.sql --connection <your-connection>
 -- ============================================================================
 
 USE ROLE ACCOUNTADMIN;
@@ -26,13 +29,13 @@ CREATE STAGE IF NOT EXISTS ARCTIC_TIMES.RAW.SUBSCRIBER_STAGE;
 -- ---------------------------------------------------------------------------
 -- Upload local files (absolute paths; snow sql executes PUT client-side)
 -- ---------------------------------------------------------------------------
-PUT 'file:///Users/edendulk/code/lemonde/scripts/data_generation/output/ga4_stage/batch_1/*'
+PUT 'file://scripts/data_generation/output/ga4_stage/batch_1/*'
   @ARCTIC_TIMES.RAW.GA4_STAGE/batch_1/ OVERWRITE = TRUE AUTO_COMPRESS = TRUE;
-PUT 'file:///Users/edendulk/code/lemonde/scripts/data_generation/output/ga4_stage/batch_2/*'
+PUT 'file://scripts/data_generation/output/ga4_stage/batch_2/*'
   @ARCTIC_TIMES.RAW.GA4_STAGE/batch_2/ OVERWRITE = TRUE AUTO_COMPRESS = TRUE;
-PUT 'file:///Users/edendulk/code/lemonde/scripts/data_generation/output/ga4_variant/*'
+PUT 'file://scripts/data_generation/output/ga4_variant/*'
   @ARCTIC_TIMES.RAW.GA4_VARIANT_STAGE/ OVERWRITE = TRUE AUTO_COMPRESS = TRUE;
-PUT 'file:///Users/edendulk/code/lemonde/scripts/data_generation/output/subscribers/*'
+PUT 'file://scripts/data_generation/output/subscribers/*'
   @ARCTIC_TIMES.RAW.SUBSCRIBER_STAGE/ OVERWRITE = TRUE AUTO_COMPRESS = TRUE;
 
 -- ---------------------------------------------------------------------------
